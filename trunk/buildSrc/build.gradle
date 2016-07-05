@@ -1,0 +1,29 @@
+apply plugin: 'groovy'
+apply plugin: 'maven'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile gradleApi()
+    compile 'commons-io:commons-io:1.4'
+    compile 'commons-codec:commons-codec:1.6'
+    compile 'org.ow2.asm:asm:5.0.3'
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: uri('../repo'))
+            pom.project {
+                name 'hot fix'
+                groupId 'cn.jiajixin.nuwa.kidswant'
+                artifactId 'gradle'
+                version '1.0.0'
+                packaging 'aar'
+            }
+        }
+    }
+}
+
