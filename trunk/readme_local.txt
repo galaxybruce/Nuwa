@@ -56,3 +56,15 @@
        把patch-pcRelease.apk重新命名成patch.apk作为最终的补丁包发布
        测试的话先把补丁包放到sdcard上，然后重启app即可看到效果
        adb push app\build\outputs\nuwa\pc\release\patch\patch-pcRelease.apk /sdcard/patch.apk
+
+
+
+
+微信把热修复的概念上升到一个新的高度了 不只是修复严重bug
+包括：
+1 数据统计
+2 bug修复
+3 简单功能升级
+4 灰度发布
+5 远程调试
+6 AB测试

@@ -30,9 +30,10 @@ public class NuwaManager {
 
     public interface HotFixListener{
         public void onHotFixPatchDownloadFinish();
+
+        public void onHotFixPatchDeleted();
     }
 
-    private HotFixListener mHotFixListener;
     /**
      * @param context
      */
@@ -40,7 +41,7 @@ public class NuwaManager {
         try {
             Nuwa.initial(context);
             String appVersion = getAppVersion(context);
-            String patchPath = getPathPath(context, appVersion);
+            String patchPath = getPatchPath(context, appVersion);
             NuwaLogUtils.i("aaaaaaaaaaaaaaaaa", "NuwaManager.loadPatch: " + patchPath);
             Nuwa.loadPatch(context, patchPath);
         } catch (NuwaException e) {
@@ -78,6 +79,10 @@ public class NuwaManager {
 
         if (patchInfo.delete) {
             deletePatch(context);
+            if(hotFixListener != null)
+            {
+                hotFixListener.onHotFixPatchDeleted();
+            }
             return;
         }
 
@@ -85,7 +90,7 @@ public class NuwaManager {
             return;
         }
 
-        String patchPath = getPathPath(context, patchInfo.appVersion);
+        String patchPath = getPatchPath(context, patchInfo.appVersion);
         File file = new File(patchPath);
         if(file.exists())
         {
@@ -110,7 +115,7 @@ public class NuwaManager {
         return dexDir.getAbsolutePath();
     }
 
-    private String getPathPath(Context context, String appVersion)
+    private String getPatchPath(Context context, String appVersion)
     {
         String patchName = String.format(PATCH_NAME, appVersion);
         String dexDir = getDexDir(context);
@@ -254,7 +259,7 @@ public class NuwaManager {
         InputStream is = null;
         try
         {
-            String patchPath = getPathPath(context, patchInfo.appVersion);
+            String patchPath = getPatchPath(context, patchInfo.appVersion);
             String tmpFilePath = patchPath + ".tmp";
             File file = new File(patchPath);
             File tmpFile = new File(tmpFilePath);
