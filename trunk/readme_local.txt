@@ -43,7 +43,7 @@
        该命令执行完毕后，会在app\build\outputs目录下有个nuwa目录，把nuwa目录copy到电脑上任意目录，比如D:\haiziwang\nuwa，
        一定要把最后发布编译的nuwa保存，直到后面又有新版本发布才需要更新，中间打补丁不需要更新nuwa
     2、修改出现bug的文件（java文件，不支持资源文件）并执行如下命令
-       gradlew clean assemblePcRelease -P NuwaDir=D:\haiziwang\nuwa
+       gradlew clean assemblePcRelease -P NuwaDir=D:\haiziwang\hotfix\b2c\nuwa
        NuwaDir的值就是上一步中的nuwa
        这里只编译pc渠道，因为每个渠道的java部分的代码是一样的，没必要给所有的渠道都制作补丁包，只要一个渠道，所有渠道公用就行
 
@@ -58,7 +58,9 @@
        adb push app\build\outputs\nuwa\pc\release\patch\patch-pcRelease.apk /sdcard/patch.apk
 
 
-
+四、注意事项
+    1、Application中的内容要用ApplicationWrapper简介引用，并且ApplicationWrapper实例创建要在loadPatch之后，
+        不然ApplicationWrapper中会出现找不到hack.apk中的类，ApplicationWrapper中的类也不会得到修复。
 
 微信把热修复的概念上升到一个新的高度了 不只是修复严重bug
 包括：
