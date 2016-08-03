@@ -30,6 +30,7 @@ class NuwaProcessor {
                 jarOutputStream.putNextEntry(zipEntry);
 
                 if (shouldProcessClassInJar(entryName, includePackage, excludePackage, excludeClass)) {
+//                    println("xxxxxxxxxxxxxxxxxxxxreferHackWhenInit1: " + entryName)
                     def bytes = referHackWhenInit(inputStream);
                     jarOutputStream.write(bytes);
 
@@ -43,6 +44,7 @@ class NuwaProcessor {
                 } else {
                     jarOutputStream.write(IOUtils.toByteArray(inputStream));
                 }
+                inputStream.close() // added by bruce.zhang
                 jarOutputStream.closeEntry();
             }
             jarOutputStream.close();
@@ -150,6 +152,7 @@ class NuwaProcessor {
 
         FileInputStream inputStream = new FileInputStream(file);
         FileOutputStream outputStream = new FileOutputStream(optClass)
+//        println("xxxxxxxxxxxxxxxxxxxxreferHackWhenInit2: " + file.absolutePath)
 
         def bytes = referHackWhenInit(inputStream);
         outputStream.write(bytes)

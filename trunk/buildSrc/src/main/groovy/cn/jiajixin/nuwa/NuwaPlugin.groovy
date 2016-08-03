@@ -208,6 +208,11 @@ class NuwaPlugin implements Plugin<Project> {
             FileUtils.copyFile(mapFile, newMapFile)
         }
 
+        //delete hack.apk
+        def projectDir = project.projectDir.absolutePath
+        projectDir = projectDir.subSequence(0, projectDir.lastIndexOf(File.separator));
+        def hackAssestApkFile = new File(projectDir + '/app/src/main/assets/hack.apk');
+        hackAssestApkFile.delete();
     }
 }
 
