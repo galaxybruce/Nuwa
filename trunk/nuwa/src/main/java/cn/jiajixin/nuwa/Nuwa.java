@@ -15,9 +15,9 @@ import cn.jiajixin.nuwa.util.SecurityChecker;
  */
 public class Nuwa {
 
-    private static final String HACK_DEX = "hack.apk";
-    private static final String DEX_OPT_DIR = "nuwaopt";
+    public static final String HACK_DEX = "hack.apk";
     public static final String DEX_DIR = "nuwa";
+    private static final String DEX_OPT_DIR = "nuwaopt";
 
     public static void initial(Context context) throws NuwaException {
         File dexDir = new File(context.getFilesDir(), DEX_DIR);
@@ -57,5 +57,16 @@ public class Nuwa {
         } catch (Exception e) {
             throw new NuwaException(e.getMessage());
         }
+    }
+
+    public static boolean isHackDexValid(Context context)
+    {
+        File dexDir = new File(context.getFilesDir(), Nuwa.DEX_DIR);
+        String hackPath = dexDir.getAbsolutePath() + File.separator + HACK_DEX;
+        File file = new File(hackPath);
+        if(!file.exists()) return false;
+
+        SecurityChecker securityChecker = new SecurityChecker(context.getApplicationContext());
+        return securityChecker.verifyApk(file);
     }
 }
