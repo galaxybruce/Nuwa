@@ -11,6 +11,7 @@
           repositories {
               maven {
                   //url uri('file:///D:/haiziwang/sourcecode/AppDev/Nuwa/trunk/repo')//nuwa插件库位置--绝对位置
+		   //url uri('file:../../Nuwa/trunk/repo')//nuwa插件库位置--相对位置
                   url uri('../../Nuwa/trunk/repo')//nuwa插件库位置--相对位置
               }
               jcenter()
@@ -65,7 +66,7 @@
        app\build\outputs\nuwa\pc\release\patch\patch-pcRelease.apk
        把patch-pcRelease.apk重新命名成patch.apk作为最终的补丁包发布
        测试的话先把补丁包放到sdcard上，然后重启app即可看到效果
-       adb push app\build\outputs\nuwa\pc\release\patch\patch-pcRelease.apk /sdcard/patch.apk
+       adb push app\build\outputs\nuwa\pc\release\patch\patch-pcRelease.apk /sdcard/patch_6.3.apk （6.3是appName, 如debug版本是6.3-debug）
 
 
 四、注意事项
