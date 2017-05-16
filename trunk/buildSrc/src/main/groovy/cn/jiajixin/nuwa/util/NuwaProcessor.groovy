@@ -26,25 +26,35 @@ class NuwaProcessor {
                 String entryName = jarEntry.getName();
                 ZipEntry zipEntry = new ZipEntry(entryName);
 
-                InputStream inputStream = file.getInputStream(jarEntry);
                 jarOutputStream.putNextEntry(zipEntry);
+                InputStream inputStream = null;
 
                 if (shouldProcessClassInJar(entryName, includePackage, excludePackage, excludeClass)) {
-//                    println("xxxxxxxxxxxxxxxxxxxxreferHackWhenInit1: " + entryName)
+                    println("xxxxxxxxxxxxxxxxxxxxreferHackWhenInit1: " + entryName)
+                    inputStream = file.getInputStream(jarEntry);
                     def bytes = referHackWhenInit(inputStream);
-                    jarOutputStream.write(bytes);
+                    if(bytes != null)//不知道什么原因，有些第三方sdk里面的类读取异常
+                    {
+                        jarOutputStream.write(bytes);
 
-                    def hash = DigestUtils.shaHex(bytes)
-                    hashFile.append(NuwaMapUtils.format(entryName, hash))
+                        def hash = DigestUtils.shaHex(bytes)
+                        hashFile.append(NuwaMapUtils.format(entryName, hash))
 
-                    if (NuwaMapUtils.notSame(map, entryName, hash)) {//这里定义changeClass列表变量，在这列表中的认为是改动过的
-                        println("processJar.patch file: " + entryName)
-                        NuwaFileUtils.copyBytesToFile(bytes, NuwaFileUtils.touchFile(patchDir, entryName))
+                        if (NuwaMapUtils.notSame(map, entryName, hash)) {//这里定义changeClass列表变量，在这列表中的认为是改动过的
+                            println("processJar.patch file: " + entryName)
+                            NuwaFileUtils.copyBytesToFile(bytes, NuwaFileUtils.touchFile(patchDir, entryName))
+                        }
+                    }
+                    else {
+                        inputStream = file.getInputStream(jarEntry);
+                        jarOutputStream.write(IOUtils.toByteArray(inputStream));
+                        inputStream.close();
                     }
                 } else {
+                    inputStream = file.getInputStream(jarEntry);
                     jarOutputStream.write(IOUtils.toByteArray(inputStream));
+                    inputStream.close();
                 }
-                inputStream.close() // added by bruce.zhang
                 jarOutputStream.closeEntry();
             }
             jarOutputStream.close();
@@ -129,12 +139,19 @@ class NuwaProcessor {
 
     //refer hack class when object init
     private static byte[] referHackWhenInit(InputStream inputStream) {
-        ClassReader cr = new ClassReader(inputStream);
-        ClassWriter cw = new ClassWriter(cr, 0);
+        try {
+            ClassReader cr = new ClassReader(inputStream);
+            ClassWriter cw = new ClassWriter(cr, 0);
 
-        ClassVisitor cv = new InjectClassVisitor(Opcodes.ASM4, cw);
-        cr.accept(cv, 0);
-        return cw.toByteArray();
+            ClassVisitor cv = new InjectClassVisitor(Opcodes.ASM4, cw);
+            cr.accept(cv, 0);
+            return cw.toByteArray();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace()
+            return null;
+        }
     }
 
     private static boolean shouldProcessClassInJar(String entryName, HashSet<String> includePackage, HashSet<String> excludePackage, HashSet<String> excludeClass) {
@@ -143,7 +160,9 @@ class NuwaProcessor {
             return false;
         }
         if (entryName.contains("/R\$") || entryName.endsWith("/R.class") || entryName.endsWith("/BuildConfig.class") || entryName.startsWith("cn/jiajixin/nuwa/") || entryName.contains("android/support/"))
+        {
             return false;
+        }
         return NuwaSetUtils.isIncluded(entryName, includePackage) && !NuwaSetUtils.isExcluded(entryName, excludePackage, excludeClass)
     }
 
