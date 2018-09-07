@@ -37,7 +37,7 @@ import cn.jiajixin.nuwa.util.SecurityChecker;
 public class NuwaManager {
 
     private final String PATCH_NAME = "patch_%s.apk";
-    private final String DEFAULT_URL = "http://appdata.haiziwang.com/patch/query?appName=%s&appVersion=%s&device=%s&account=%s";
+    private final String DEFAULT_URL = "http://appdata.galaxybruce.com/patch/query?appName=%s&appVersion=%s&device=%s&account=%s";
 
     public interface HotFixListener{
         public void onHotFixPatchDownloadFinish();
